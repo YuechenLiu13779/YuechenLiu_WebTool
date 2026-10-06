@@ -1,0 +1,52 @@
+html,
+body {
+  background-color: #1a1925;
+  color: #ffffff;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Main Flexbox container */
+.container {
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Button Flexbox container */
+.buttons {
+  display: flex;
+  flex-direction: row;
+
+  justify-content: center;
+  align-items: center;
+
+  gap: 10px;
+}
+
+h1,
+p {
+  margin: 0;
+  text-align: center;
+}
+
+button {
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  padding: 10px 15px;
+}
+
+canvas {
+  display: block;
+}
