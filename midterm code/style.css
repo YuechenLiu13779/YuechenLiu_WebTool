@@ -1,0 +1,793 @@
+/* 让元素的宽度包含 padding 和 border */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  color: #222;
+  background-color: white;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  padding: 10px 18px;
+  border: 1px solid #222;
+  border-radius: 24px;
+  background-color: white;
+  color: #222;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #eeeeee;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+input,
+select {
+  padding: 12px;
+  border: 1px solid #222;
+  background-color: white;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #4169a1;
+  outline-offset: 3px;
+}
+
+/* 防止 display: flex 覆盖 hidden 的隐藏效果 */
+[hidden] {
+  display: none !important;
+}
+
+/* 整体：上方工作区 + 底部操作栏 */
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  /* height: 100dvh;*/
+}
+
+/* 工作区：作品区和 Notes 左右排列 */
+.workspace {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.compare-part {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 26px;
+  font-weight: normal;
+  text-align: center;
+}
+
+/* 作品区可以独立滚动 */
+.artwork-area {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: flex-start;
+  gap: 32px;
+  flex: 1;
+  min-height: 0;
+  padding: 24px 36px;
+  overflow-y: auto;
+}
+
+.empty-message {
+  width: 100%;
+  margin-top: 80px;
+  color: #777;
+  text-align: center;
+}
+
+/* 后面 JavaScript 创建的作品卡片会使用这些样式 */
+.artwork-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: 280px;
+  max-width: 100%;
+}
+
+.artwork-image {
+  width: 100%;
+  height: 230px;
+  object-fit: contain;
+  cursor: pointer;
+}
+
+.answer-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 85%;
+  min-height: 48px;
+  padding: 8px;
+  border: 1px solid #222;
+  border-radius: 16px;
+}
+
+.artwork-info {
+  width: 100%;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* 底部操作栏 */
+.control-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 24px;
+  padding: 24px 32px;
+  border-top: 1px solid #222;
+}
+
+.style-controls,
+.keyword-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.style-controls {
+  width: 170px;
+}
+
+.selected-styles {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 180px;
+}
+
+/* 一个流派 Tag */
+.style-tag {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  background-color: #222;
+  color: white;
+}
+
+/* Tag 里面的删除按钮 */
+.remove-style {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background-color: transparent;
+  color: white;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.remove-style:hover {
+  background-color: #555;
+}
+
+.keyword-controls {
+  flex: 1;
+  min-width: 220px;
+}
+
+.input-hint {
+  color: #777;
+  font-size: 13px;
+}
+
+.round-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.status-message {
+  width: 100%;
+  margin: 0;
+  font-size: 14px;
+}
+
+.status-message:empty {
+  display: none;
+}
+
+/* Notes */
+.notes-part {
+  display: flex;
+  flex-direction: column;
+  width: 48%;
+  min-width: 0;
+  padding: 24px;
+  border-left: 1px solid #222;
+  overflow-y: auto;
+}
+
+.notes-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+#notes-title {
+  flex: 1;
+  min-width: 120px;
+}
+
+.notes-hint {
+  color: #777;
+  font-size: 14px;
+}
+
+.notes-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.notes-content {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  align-items: flex-start;
+  gap: 16px;
+  min-height: 300px;
+  padding: 16px;
+  background-color: white;
+}
+
+/* 通用浮层背景 */
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+  background-color: rgba(0, 0, 0, 0.35);
+  z-index: 10;
+}
+
+/* History */
+.history-window {
+  display: flex;
+  flex-direction: column;
+  width: 85%;
+  max-width: 1200px;
+  max-height: 85vh;
+  padding: 24px;
+  background-color: #eeece9;
+  border: 1px solid #222;
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.history-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.history-content {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 24px;
+  min-height: 200px;
+  overflow-y: auto;
+}
+
+/* 图片放大窗口 */
+#artwork-overlay {
+  z-index: 20;
+}
+
+.artwork-window {
+  position: relative;
+  width: 90%;
+  max-width: 900px;
+  max-height: 90vh;
+  padding: 48px 24px 24px;
+  overflow-y: auto;
+  background-color: white;
+}
+
+.close-artwork {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+
+#large-artwork {
+  display: block;
+  width: 100%;
+  max-height: 65vh;
+  object-fit: contain;
+}
+
+#artwork-details {
+  line-height: 1.6;
+}
+
+/* 窄屏幕下改成上下排列 */
+@media (max-width: 750px) {
+  .header {
+    padding: 16px;
+    gap: 8px;
+  }
+
+  .header h1 {
+    font-size: 20px;
+  }
+
+  .workspace {
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .compare-part {
+    flex: none;
+    min-height: 45vh;
+  }
+
+  .artwork-area {
+    overflow-y: visible;
+    padding: 20px;
+  }
+
+  .notes-part {
+    flex: none;
+    width: 100%;
+    overflow-y: visible;
+    border-left: none;
+    border-top: 1px solid #222;
+  }
+
+  .control-bar {
+    gap: 12px;
+    padding: 16px;
+    max-height: 45vh;
+    overflow-y: auto;
+  }
+
+  .round-controls {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .history-window {
+    width: 100%;
+    padding: 16px;
+  }
+}
+
+/* 可以拖动的流派 Tag */
+.style-tag[draggable="true"] {
+  cursor: grab;
+}
+
+/* 按住时显示抓取状态 */
+.style-tag[draggable="true"]:active {
+  cursor: grabbing;
+}
+
+/* 正确答案 */
+.answer-box.correct-answer {
+  border: 2px solid #377a46;
+  background-color: #edf7ef;
+}
+
+/* 错误答案：颜色和轻晃都由动画控制 */
+.answer-box.wrong-answer {
+  animation: wrongFeedback 0.45s ease;
+}
+
+@keyframes wrongFeedback {
+  0%,
+  100% {
+    transform: translateX(0);
+    border-color: #222;
+    background-color: white;
+  }
+
+  20%,
+  60% {
+    transform: translateX(-6px);
+    border-color: #bd4038;
+    background-color: #ffe8e6;
+  }
+
+  40%,
+  80% {
+    transform: translateX(6px);
+    border-color: #bd4038;
+    background-color: #ffe8e6;
+  }
+}
+
+/* 资料出现时淡入 */
+.artwork-info:not([hidden]) {
+  animation: revealInfo 0.4s ease;
+}
+
+.artwork-info p {
+  margin: 0 0 8px;
+}
+
+.artwork-info a {
+  color: #294e78;
+}
+
+@keyframes revealInfo {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* 用户偏好减少动态效果时，只变色，不晃动 */
+@media (prefers-reduced-motion: reduce) {
+  .answer-box.wrong-answer {
+    animation-name: wrongColorOnly;
+  }
+
+  .artwork-info:not([hidden]) {
+    animation: none;
+  }
+}
+
+@keyframes wrongColorOnly {
+  50% {
+    border-color: #bd4038;
+    background-color: #ffe8e6;
+  }
+}
+
+/* Notes 内容区也是图片放置区域 */
+.notes-content {
+  border: 1px dashed #ccc;
+}
+
+/* 加入 Notes 的图片 */
+.note-image {
+  width: calc(50% - 8px);
+  height: auto;
+  object-fit: contain;
+}
+
+/* Notes 打开时，作品图片提示可拖动 */
+.artwork-image[draggable="true"] {
+  cursor: grab;
+}
+
+.artwork-image[draggable="true"]:active {
+  cursor: grabbing;
+}
+
+/* 保留可点击的空白，也方便继续拖入图片 */
+.notes-content {
+  padding-bottom: 80px;
+  cursor: text;
+}
+
+/* Notes 中的文字框 */
+.note-text {
+  flex: 0 0 100%;
+  width: 100%;
+  min-width: 0;
+  min-height: 100px;
+  padding: 12px;
+
+  border: 1px dashed #ccc;
+  border-radius: 0;
+  background-color: transparent;
+
+  color: #222;
+  font: inherit;
+  line-height: 1.6;
+  resize: vertical;
+  cursor: text;
+}
+
+.note-text:focus {
+  border-color: #777;
+}
+
+/* 每条文字笔记占一整行 */
+.note-text-item {
+  position: relative;
+  flex: 0 0 100%;
+  min-width: 0;
+}
+
+/* 给右上角删除按钮留位置 */
+.note-text-item .note-text {
+  display: block;
+  width: 100%;
+  padding-right: 42px;
+}
+
+/* 文字笔记的删除按钮 */
+.delete-note-text {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background-color: transparent;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.delete-note-text:hover {
+  background-color: #eeeeee;
+}
+
+/* 图片容器，占 Notes 内容区约一半宽度 */
+.note-image-item {
+  position: relative;
+  width: calc(50% - 8px);
+  cursor: grab;
+}
+
+/* 图片填满自己的容器 */
+.note-image-item .note-image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* 拖动时提示 */
+.note-image-item:active {
+  cursor: grabbing;
+}
+
+.moving-note {
+  opacity: 0.45;
+}
+
+/* 图片删除按钮 */
+.delete-note-image {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background-color: white;
+  color: #222;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.delete-note-image:hover {
+  background-color: #eeeeee;
+}
+
+/* History 顶部标签 */
+.history-tabs button {
+  border: none;
+  border-radius: 0;
+  border-bottom: 2px solid transparent;
+  background-color: transparent;
+}
+
+/* 当前选择的标签 */
+.history-tabs button.active-history-tab {
+  border-bottom-color: #222;
+  font-weight: bold;
+}
+
+/* 标签之间的分隔线 */
+#notes-history-tab {
+  border-left: 1px solid #222;
+}
+
+/* 保留可点击的空白，也方便继续拖入图片 */
+.notes-content {
+  padding-bottom: 80px;
+  cursor: text;
+}
+
+/* Notes 中的文字框 */
+.note-text {
+  flex: 0 0 100%;
+  width: 100%;
+  min-width: 0;
+  min-height: 100px;
+  padding: 12px;
+
+  border: 1px dashed #ccc;
+  border-radius: 0;
+  background-color: transparent;
+
+  color: #222;
+  font: inherit;
+  line-height: 1.6;
+  resize: vertical;
+  cursor: text;
+}
+
+.note-text:focus {
+  border-color: #777;
+}
+
+/* 每条历史笔记独占一行 */
+.notes-history-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  width: 100%;
+  min-width: 0;
+  margin-bottom: 16px;
+}
+
+/* 名称占据这一行的剩余空间 */
+.notes-history-name {
+  flex: 1;
+  min-width: 120px;
+  border-radius: 0;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.notes-history-row > button:not(.notes-history-name) {
+  border-radius: 0;
+}
+
+/* 临时导出区域，不显示在正常页面中 */
+.notes-export {
+  position: absolute;
+  left: -10000px;
+  top: 0;
+
+  padding: 24px;
+  background-color: white;
+  color: #222;
+}
+
+.notes-export h2 {
+  margin: 0 0 24px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: normal;
+  overflow-wrap: anywhere;
+}
+
+.notes-export-content {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.notes-export-content img {
+  width: calc(50% - 8px);
+  height: auto;
+}
+
+.notes-export-content p {
+  flex: 0 0 100%;
+  min-width: 0;
+  margin: 0;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* 顶部工具区域不被长笔记压缩 */
+.notes-header,
+.notes-hint,
+.notes-tools {
+  flex-shrink: 0;
+}
+
+/* 内容区填满剩余空间，并随图片、文字增加而增长 */
+.notes-content {
+  flex: 1 0 auto;
+  min-height: 300px;
+  padding-bottom: 100px;
+}
+
+/* 大屏幕每行四张，间距沿用 history-content 的 24px */
+.artwork-history-item {
+  flex: 0 0 calc((100% - 72px) / 4);
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid #aaa;
+  border-radius: 0;
+  background-color: white;
+}
+
+.artwork-history-item img {
+  display: block;
+  width: 100%;
+  height: 180px;
+  object-fit: contain;
+}
+
+.artwork-history-item:hover {
+  border-color: #222;
+  background-color: #f5f5f5;
+}
+
+@media (max-width: 750px) {
+  .artwork-history-item {
+    flex-basis: calc((100% - 24px) / 2);
+  }
+}
+
+@media (max-width: 400px) {
+  .artwork-history-item {
+    flex-basis: 100%;
+  }
+}
